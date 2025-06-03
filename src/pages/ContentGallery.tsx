@@ -1,26 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './ContentGallery.module.css';
-
-const mockData = [
-  { title: 'Porto', author: 'Marco Alves', price: null, type: 'view', img: 'https://via.placeholder.com/200x250?text=Image+1' },
-  { title: 'Memphis', author: 'Marco Alves', price: 32, type: 'paid', img: 'https://via.placeholder.com/200x250?text=Image+2' },
-  { title: 'Addis Ababa', author: 'Marco Alves', price: 16, type: 'paid', img: 'https://via.placeholder.com/200x250?text=Image+3' },
-  { title: 'Cleveland', author: 'Marco Alves', price: 0, type: 'free', img: 'https://via.placeholder.com/200x250?text=Image+4' },
-  { title: 'Porto', author: 'Marco Alves', price: null, type: 'view', img: 'https://via.placeholder.com/200x250?text=Image+5' },
-];
+import { fetchContents, ContentItem, PricingOption } from '../services/contentService';
 
 const ContentGallery: React.FC = () => {
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState({ paid: false, free: false, view: false });
+  const [data, setData] = useState<ContentItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchContents()
+      .then(setData)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilters({ ...filters, [e.target.name]: e.target.checked });
   };
 
-  const filteredData = mockData.filter(item => {
-    if (filters.paid && item.type === 'paid') return true;
-    if (filters.free && item.type === 'free') return true;
-    if (filters.view && item.type === 'view') return true;
+  const filteredData = data.filter(item => {
+    if (filters.paid && item.pricingOption === PricingOption.PAID) return true;
+    if (filters.free && item.pricingOption === PricingOption.FREE) return true;
+    if (filters.view && item.pricingOption === PricingOption.VIEW_ONLY) return true;
     if (!filters.paid && !filters.free && !filters.view) return true;
     return false;
   }).filter(item => item.title.toLowerCase().includes(search.toLowerCase()));
@@ -48,17 +52,19 @@ const ContentGallery: React.FC = () => {
         <button className={styles.resetBtn} onClick={() => setFilters({ paid: false, free: false, view: false })}>RESET</button>
       </div>
       <div className={styles.contentsListSection}>
+        {loading && <div>Loading...</div>}
+        {error && <div style={{ color: 'red' }}>{error}</div>}
         <div className={styles.grid}>
-          {filteredData.map((item, idx) => (
+          {!loading && !error && filteredData.map((item, idx) => (
             <div className={styles.card} key={idx}>
-              <img src={item.img} alt={item.title} className={styles.cardImg} />
+              <img src={item.imagePath} alt={item.title} className={styles.cardImg} />
               <div className={styles.cardInfo}>
                 <div className={styles.cardTitle}>{item.title}</div>
-                <div className={styles.cardAuthor}>{item.author}</div>
+                <div className={styles.cardAuthor}>{item.creator}</div>
                 <div className={styles.cardPrice}>
-                  {item.type === 'paid' && `$${item.price?.toFixed(2)}`}
-                  {item.type === 'free' && <span className={styles.free}>FREE</span>}
-                  {item.type === 'view' && <span className={styles.viewOnly}>View Only</span>}
+                  {item.pricingOption === PricingOption.PAID && `$${item.price?.toFixed(2)}`}
+                  {item.pricingOption === PricingOption.FREE && <span className={styles.free}>FREE</span>}
+                  {item.pricingOption === PricingOption.VIEW_ONLY && <span className={styles.viewOnly}>View Only</span>}
                 </div>
               </div>
             </div>
