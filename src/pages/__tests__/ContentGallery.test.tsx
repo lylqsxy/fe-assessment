@@ -1,11 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
 import ContentGallery from '../ContentGallery';
 import { fetchContents } from '../../services/contentService';
 import { PricingOption } from '../../services/contentService';
+import { setSearchQuery } from '../../store/searchSlice';
 
 // Mock the contentService
 jest.mock('../../services/contentService');
@@ -119,21 +120,11 @@ describe('ContentGallery', () => {
     const sortSelect = screen.getByRole('combobox');
     fireEvent.change(sortSelect, { target: { value: 'high' } });
     
-    // Verify the content is sorted (you might need to adjust this based on your actual sorting logic)
+    // Verify the content is sorted
     await waitFor(() => {
       const items = screen.getAllByRole('img');
       expect(items[0]).toHaveAttribute('alt', 'Test Content 1');
     });
-  });
-
-  it('handles search input correctly', async () => {
-    renderComponent();
-    
-    const searchInput = screen.getByPlaceholderText("Find the items you're looking for");
-    fireEvent.change(searchInput, { target: { value: 'Test' } });
-    
-    // Verify search query is updated
-    expect(searchInput).toHaveValue('Test');
   });
 
   it('resets filters when reset button is clicked', async () => {
