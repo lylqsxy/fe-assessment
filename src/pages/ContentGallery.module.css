@@ -1,0 +1,132 @@
+.container {
+  background: #181a1b;
+  min-height: 100vh;
+  color: #fff;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  padding-bottom: 40px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #111314;
+  padding: 20px 40px;
+}
+.logo {
+  font-size: 1.5rem;
+  color: #3fe0c5;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+.featureBtn {
+  background: #2ecc71;
+  color: #fff;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.searchBarSection {
+  display: flex;
+  align-items: center;
+  background: #1d1f1f;
+  padding: 20px 40px 20px 40px;
+  position: relative;
+}
+.searchBar {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 4px 0 0 4px;
+  border: none;
+  font-size: 1rem;
+  background: #232526;
+  color: #fff;
+  outline: none;
+}
+.searchBtn {
+    width: 20px;
+    position: absolute;
+    right: 50px;
+    top: 29px;
+    cursor: pointer;
+    color: #fff;
+}
+.filterSection {
+  margin: 20px 40px 0 40px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  color: #2ecc71;
+  gap: 20px;
+}
+.resetBtn {
+  margin-left: auto;
+  background: none;
+  color: #2ecc71;
+  border: none;
+  padding: 6px 16px;
+  cursor: pointer;
+}
+.contentsListSection {
+  margin: 30px 40px 0 40px;
+}
+.contentsListSection > span {
+  color: #3fe0c5;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
+  margin-top: 18px;
+}
+.card {
+  background: #232526;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #232526;
+  display: flex;
+  flex-direction: column;
+  transition: border 0.2s;
+}
+.card:hover {
+  border: 2px solid #3fe0c5;
+}
+.cardImg {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  background: #181a1b;
+}
+.cardInfo {
+  padding: 14px 12px 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cardTitle {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+.cardAuthor {
+  font-size: 0.95rem;
+  color: #aaa;
+}
+.cardPrice {
+  margin-top: 6px;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+.free {
+  color: #2ecc71;
+}
+.viewOnly {
+  color: #fff;
+  background: #232526;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.95rem;
+  border: 1px solid #fff;
+} 
