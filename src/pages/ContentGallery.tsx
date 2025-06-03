@@ -27,7 +27,7 @@ const ContentGallery: React.FC = () => {
     if (filters.view && item.pricingOption === PricingOption.VIEW_ONLY) return true;
     if (!filters.paid && !filters.free && !filters.view) return true;
     return false;
-  }).filter(item => item.title.toLowerCase().includes(search.toLowerCase()));
+  }).filter(item => item.title.toLowerCase().includes(search.toLowerCase()) || item.creator.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <div className={styles.container}>
