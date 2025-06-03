@@ -15,10 +15,19 @@ const ContentGallery: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Initialize search query from URL on component mount
+  // Initialize search query and filters from URL on component mount
   useEffect(() => {
     const queryFromUrl = searchParams.get('q') || '';
+    const paidFromUrl = searchParams.get('paid') === 'true';
+    const freeFromUrl = searchParams.get('free') === 'true';
+    const viewFromUrl = searchParams.get('view') === 'true';
+    
     dispatch(setSearchQuery(queryFromUrl));
+    setFilters({
+      paid: paidFromUrl,
+      free: freeFromUrl,
+      view: viewFromUrl
+    });
   }, [dispatch, searchParams]);
 
   useEffect(() => {
@@ -33,18 +42,37 @@ const ContentGallery: React.FC = () => {
   }, [dispatch]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilters({ ...filters, [e.target.name]: e.target.checked });
+    const newFilters = { ...filters, [e.target.name]: e.target.checked };
+    setFilters(newFilters);
+    
+    // Update URL with filter states
+    const params: Record<string, string> = {};
+    if (searchQuery) params.q = searchQuery;
+    if (newFilters.paid) params.paid = 'true';
+    if (newFilters.free) params.free = 'true';
+    if (newFilters.view) params.view = 'true';
+    setSearchParams(params);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     dispatch(setSearchQuery(query));
-    // Update URL with search query
-    if (query) {
-      setSearchParams({ q: query });
-    } else {
-      setSearchParams({});
-    }
+    
+    // Update URL with search query and current filters
+    const params: Record<string, string> = {};
+    if (query) params.q = query;
+    if (filters.paid) params.paid = 'true';
+    if (filters.free) params.free = 'true';
+    if (filters.view) params.view = 'true';
+    setSearchParams(params);
+  };
+
+  const handleResetFilters = () => {
+    setFilters({ paid: false, free: false, view: false });
+    // Keep only search query in URL when resetting filters
+    const params: Record<string, string> = {};
+    if (searchQuery) params.q = searchQuery;
+    setSearchParams(params);
   };
 
   const filteredData = data.filter(item => {
@@ -78,7 +106,7 @@ const ContentGallery: React.FC = () => {
         <label><input type="checkbox" name="paid" checked={filters.paid} onChange={handleFilterChange} /> Paid</label>
         <label><input type="checkbox" name="free" checked={filters.free} onChange={handleFilterChange} /> Free</label>
         <label><input type="checkbox" name="view" checked={filters.view} onChange={handleFilterChange} /> View Only</label>
-        <button className={styles.resetBtn} onClick={() => setFilters({ paid: false, free: false, view: false })}>RESET</button>
+        <button className={styles.resetBtn} onClick={handleResetFilters}>RESET</button>
       </div>
       <div className={styles.contentsListSection}>
         {loading && <div>Loading...</div>}
