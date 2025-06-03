@@ -163,4 +163,29 @@
   padding: 20px;
   color: #aaa;
   font-size: 1rem;
+}
+
+.sortBarContainer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.sortLabel {
+  color: #fff;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.sortDropdown {
+  background: #232526;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 24px 6px 12px;
+  font-size: 1rem;
+  appearance: none;
+  cursor: pointer;
+  position: relative;
 } 

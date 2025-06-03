@@ -19,6 +19,7 @@ const ContentGallery: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [sortOption, setSortOption] = useState('name');
 
   // Initialize search query and filters from URL on component mount
   useEffect(() => {
@@ -132,6 +133,22 @@ const ContentGallery: React.FC = () => {
     item.creator.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const sortedData = React.useMemo(() => {
+    let sorted = [...filteredData];
+    if (sortOption === 'high') {
+      sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
+    } else if (sortOption === 'low') {
+      sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
+    } else {
+      sorted.sort((a, b) => a.title.localeCompare(b.title));
+    }
+    return sorted;
+  }, [filteredData, sortOption]);
+
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortOption(e.target.value);
+  };
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -155,10 +172,23 @@ const ContentGallery: React.FC = () => {
         <button className={styles.resetBtn} onClick={handleResetFilters}>RESET</button>
       </div>
       <div className={styles.contentsListSection}>
+        {/* Sorting Bar */}
+        <div className={styles.sortBarContainer}>
+          <span className={styles.sortLabel}>Sort by</span>
+          <select
+            className={styles.sortDropdown}
+            value={sortOption}
+            onChange={handleSortChange}
+          >
+            <option value="name">Item Name</option>
+            <option value="high">Higher Price</option>
+            <option value="low">Lower Price</option>
+          </select>
+        </div>
         {loading && <div>Loading...</div>}
         {error && <div style={{ color: 'red' }}>{error}</div>}
         <div className={styles.grid}>
-          {!loading && !error && filteredData.map((item, idx) => (
+          {!loading && !error && sortedData.map((item, idx) => (
             <div className={styles.card} key={`${item.id}-${idx}`}>
               <img src={item.imagePath} alt={item.title} className={styles.cardImg} />
               <div className={styles.cardInfo}>
