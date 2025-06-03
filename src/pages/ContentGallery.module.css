@@ -30,8 +30,7 @@
 .searchBarSection {
   display: flex;
   align-items: center;
-  background: #1d1f1f;
-  padding: 20px 40px 20px 40px;
+  padding: 40px 40px 20px 40px;
   position: relative;
 }
 .searchBar {
@@ -43,22 +42,24 @@
   background: #232526;
   color: #fff;
   outline: none;
+  height: 40px;
 }
 .searchBtn {
     width: 20px;
     position: absolute;
-    right: 50px;
-    top: 29px;
+    right: 60px;
+    top: 60px;
     cursor: pointer;
     color: #fff;
 }
 .filterSection {
-  margin: 20px 40px 0 40px;
+  margin: 10px 40px 0 40px;
   padding: 16px;
   display: flex;
   align-items: center;
   color: #2ecc71;
   gap: 20px;
+  background: #101010;
 }
 .resetBtn {
   margin-left: auto;
@@ -148,4 +149,18 @@
   padding: 2px 8px;
   font-size: 0.95rem;
   border: 1px solid #fff;
+}
+
+.loadingMore {
+  text-align: center;
+  padding: 20px;
+  color: #3fe0c5;
+  font-size: 1.1rem;
+}
+
+.noMoreItems {
+  text-align: center;
+  padding: 20px;
+  color: #aaa;
+  font-size: 1rem;
 } 

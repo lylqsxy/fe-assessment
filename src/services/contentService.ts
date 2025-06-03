@@ -13,10 +13,15 @@ export interface ContentItem {
   imagePath: string;
 }
 
-export async function fetchContents(): Promise<ContentItem[]> {
+export async function fetchContents(page: number = 1, pageSize: number = 12): Promise<ContentItem[]> {
   const response = await fetch('https://closet-recruiting-api.azurewebsites.net/api/data');
   if (!response.ok) {
     throw new Error('Failed to fetch contents');
   }
-  return response.json();
+  const allContents = await response.json();
+  
+  // Simulate pagination on the client side since the API doesn't support it
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  return allContents.slice(startIndex, endIndex);
 } 

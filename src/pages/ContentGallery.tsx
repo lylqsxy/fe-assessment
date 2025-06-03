@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { setSearchQuery, setSearchResults } from '../store/searchSlice';
 import type { RootState } from '../store/store';
 import styles from './ContentGallery.module.css';
 import { fetchContents, ContentItem, PricingOption } from '../services/contentService';
+
+const ITEMS_PER_PAGE = 12;
 
 const ContentGallery: React.FC = () => {
   const dispatch = useDispatch();
@@ -13,7 +15,10 @@ const ContentGallery: React.FC = () => {
   const [filters, setFilters] = useState({ paid: false, free: false, view: false });
   const [data, setData] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   // Initialize search query and filters from URL on component mount
   useEffect(() => {
@@ -30,16 +35,57 @@ const ContentGallery: React.FC = () => {
     });
   }, [dispatch, searchParams]);
 
-  useEffect(() => {
+  const loadInitialData = useCallback(async () => {
     setLoading(true);
-    fetchContents()
-      .then((contents) => {
-        setData(contents);
-        dispatch(setSearchResults(contents));
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+    try {
+      const contents = await fetchContents(1, ITEMS_PER_PAGE);
+      setData(contents);
+      dispatch(setSearchResults(contents));
+      setHasMore(contents.length === ITEMS_PER_PAGE);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
   }, [dispatch]);
+
+  useEffect(() => {
+    loadInitialData();
+  }, [loadInitialData]);
+
+  const loadMoreData = useCallback(async () => {
+    if (loadingMore || !hasMore) return;
+    
+    setLoadingMore(true);
+    try {
+      const nextPage = page + 1;
+      const newContents = await fetchContents(nextPage, ITEMS_PER_PAGE);
+      
+      if (newContents.length > 0) {
+        setData(prevData => [...prevData, ...newContents]);
+        setPage(nextPage);
+        setHasMore(newContents.length === ITEMS_PER_PAGE);
+      } else {
+        setHasMore(false);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [page, loadingMore, hasMore]);
+
+  const handleScroll = useCallback(() => {
+    if (window.innerHeight + document.documentElement.scrollTop
+      >= document.documentElement.offsetHeight - 1000) {
+      loadMoreData();
+    }
+  }, [loadMoreData]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFilters = { ...filters, [e.target.name]: e.target.checked };
@@ -113,7 +159,7 @@ const ContentGallery: React.FC = () => {
         {error && <div style={{ color: 'red' }}>{error}</div>}
         <div className={styles.grid}>
           {!loading && !error && filteredData.map((item, idx) => (
-            <div className={styles.card} key={idx}>
+            <div className={styles.card} key={`${item.id}-${idx}`}>
               <img src={item.imagePath} alt={item.title} className={styles.cardImg} />
               <div className={styles.cardInfo}>
                 <div className={styles.cardTitle}>{item.title}</div>
@@ -127,6 +173,10 @@ const ContentGallery: React.FC = () => {
             </div>
           ))}
         </div>
+        {loadingMore && <div className={styles.loadingMore}>Loading more items...</div>}
+        {!hasMore && !loading && !loadingMore && filteredData.length > 0 && (
+          <div className={styles.noMoreItems}>No more items to load</div>
+        )}
       </div>
     </div>
   );
