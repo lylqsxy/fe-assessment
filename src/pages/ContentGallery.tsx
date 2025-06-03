@@ -152,7 +152,7 @@ const ContentGallery: React.FC = () => {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <div className={styles.logo}>CONEXT</div>
+        <div className={styles.logo}>CONNECT</div>
       </header>
       <div className={styles.searchBarSection}>
         <input

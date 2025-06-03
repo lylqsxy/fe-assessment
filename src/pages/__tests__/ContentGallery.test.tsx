@@ -62,7 +62,7 @@ describe('ContentGallery', () => {
     renderComponent();
     
     // Check if logo is rendered
-    expect(screen.getByText('CONEXT')).toBeInTheDocument();
+    expect(screen.getByText('CONNECT')).toBeInTheDocument();
     
     // Check if search bar is rendered
     expect(screen.getByPlaceholderText("Find the items you're looking for")).toBeInTheDocument();
